@@ -1,6 +1,12 @@
 <?php
 require_once 'config.php';
 
+// Debug: Log raw input
+$rawInput = file_get_contents('php://input');
+error_log("Raw input: " . $rawInput);
+error_log("Content-Type: " . ($_SERVER['CONTENT_TYPE'] ?? 'not set'));
+error_log("Request Method: " . $_SERVER['REQUEST_METHOD']);
+
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendResponse(false, 'Method not allowed', null, null);
@@ -12,10 +18,11 @@ $data = json_decode($json, true);
 
 // Log received data for debugging
 error_log("Received login request: " . print_r($data, true));
+error_log("JSON decode error: " . json_last_error_msg());
 
 // Validate JSON
 if (!$data) {
-    sendResponse(false, 'Invalid JSON data', null, null);
+    sendResponse(false, 'Invalid JSON data. Error: ' . json_last_error_msg(), null, null);
 }
 
 // Validate required fields
